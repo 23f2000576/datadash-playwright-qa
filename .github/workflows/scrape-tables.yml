@@ -1,0 +1,25 @@
+name: DataDash QA
+
+on: [push]
+
+jobs:
+  scrape:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Install 23f2000576@ds.study.iitm.ac.in dependencies
+        run: |
+          npm init -y
+          npm install playwright
+          npx playwright install --with-deps
+
+      - name: Run Playwright scraper
+        run: node .github/actions/scripts/scrape.js
