@@ -17,8 +17,9 @@ with sync_playwright() as p:
         tables = page.query_selector_all("table")
         for table in tables:
             text = table.inner_text()
-            numbers = re.findall(r"-?\d+\.?\d*", text)
-            total_sum += sum(float(n) for n in numbers)
+            numbers = re.findall(r"-?\d[\d,]*\.?\d*", text)
+            numbers = [float(n.replace(",", "")) for n in numbers]
+            total_sum += sum(numbers)
 
     browser.close()
 
