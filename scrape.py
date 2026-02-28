@@ -12,13 +12,11 @@ with sync_playwright() as p:
         url = f"https://sanand0.github.io/tdsdata/playwright-table/?seed={seed}"
         print(f"Visiting: {url}")
 
-        page.goto(url)
-
-        # Wait for table to load
-        page.wait_for_selector("table", timeout=60000)
+        page.goto(url, wait_until="networkidle")
+        page.wait_for_timeout(3000)  # allow JS tables to render
 
         tables = page.query_selector_all("table")
-        print(f"Tables found: {len(tables)}")
+        print("Tables found:", len(tables))
 
         for table in tables:
             text = table.inner_text()
