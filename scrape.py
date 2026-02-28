@@ -10,17 +10,30 @@ with sync_playwright() as p:
 
     for seed in seeds:
         url = f"https://sanand0.github.io/tdsdata/playwright/?seed={seed}"
+        print(f"Visiting: {url}")
+
         page.goto(url)
 
-        # Wait until tables load
-        page.wait_for_load_state("networkidle")
+        # Wait for tables to appear (important!)
+        page.wait_for_selector("table")
+
+        # Extra wait for JS data rendering
+        page.wait_for_timeout(2000)
 
         tables = page.query_selector_all("table")
+        print(f"Tables found: {len(tables)}")
+
         for table in tables:
             text = table.inner_text()
-            numbers = re.findall(r"\d[\d,]*\.?\d*", text)
-            numbers = [float(n.replace(",", "")) for n in numbers]
-            total_sum += sum(numbers)
+
+            # Extract numbers (including integers and decimals)
+            numbers = re.findall(r"-?\d+\.?\d*", text)
+            numbers = [float(n) for n in numbers]
+
+            page_sum = sum(numbers)
+            total_sum += page_sum
+
+        print(f"Running total: {total_sum}")
 
     browser.close()
 
