@@ -9,11 +9,11 @@ with sync_playwright() as p:
     page = browser.new_page()
 
     for seed in seeds:
-        url = f"https://sanand0.github.io/tdsdata/playwright-table/?seed={seed}"
+        url = f"https://sanand0.github.io/tdsdata/playwright/?seed={seed}"
         page.goto(url)
 
-        # Wait for table (important)
-        page.wait_for_selector("table")
+        # Wait until tables load
+        page.wait_for_load_state("networkidle")
 
         tables = page.query_selector_all("table")
         for table in tables:
