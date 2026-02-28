@@ -9,31 +9,21 @@ with sync_playwright() as p:
     page = browser.new_page()
 
     for seed in seeds:
-        url = f"https://sanand0.github.io/tdsdata/playwright/?seed={seed}"
+        url = f"https://sanand0.github.io/tdsdata/playwright-table/?seed={seed}"
         print(f"Visiting: {url}")
 
         page.goto(url)
 
-        # Wait for tables to appear (important!)
-        page.wait_for_selector("table")
-
-        # Extra wait for JS data rendering
-        page.wait_for_timeout(2000)
+        # Wait for table to load
+        page.wait_for_selector("table", timeout=60000)
 
         tables = page.query_selector_all("table")
         print(f"Tables found: {len(tables)}")
 
         for table in tables:
             text = table.inner_text()
-
-            # Extract numbers (including integers and decimals)
             numbers = re.findall(r"-?\d+\.?\d*", text)
-            numbers = [float(n) for n in numbers]
-
-            page_sum = sum(numbers)
-            total_sum += page_sum
-
-        print(f"Running total: {total_sum}")
+            total_sum += sum(float(n) for n in numbers)
 
     browser.close()
 
